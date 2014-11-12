@@ -1,4 +1,4 @@
-SAMIIO Objective-C/iOS SDK
+SAMI Objective-C/iOS SDK
 ==========================
 
 This SDK helps you connect your iOS apps to SAMI. The SDK helps authenticating with SAMI, exposes a number of methods to easily execute REST API calls to SAMI.

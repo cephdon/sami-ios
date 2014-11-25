@@ -293,10 +293,6 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
 
 -(NSNumber*) exportNormalizedMessagesWithCompletionBlock:(NSString*) uid        
             sdid:(NSString*) sdid        
-            mid:(NSString*) mid        
-            fieldPresence:(NSString*) fieldPresence        
-            filter:(NSString*) filter        
-            offset:(NSString*) offset        
             startDate:(NSNumber*) startDate        
             endDate:(NSNumber*) endDate        
             order:(NSString*) order        
@@ -319,11 +315,7 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     if(uid != nil)
         queryParams[@"uid"] = uid;if(sdid != nil)
-        queryParams[@"sdid"] = sdid;if(mid != nil)
-        queryParams[@"mid"] = mid;if(fieldPresence != nil)
-        queryParams[@"fieldPresence"] = fieldPresence;if(filter != nil)
-        queryParams[@"filter"] = filter;if(offset != nil)
-        queryParams[@"offset"] = offset;if(startDate != nil)
+        queryParams[@"sdid"] = sdid;if(startDate != nil)
         queryParams[@"startDate"] = startDate;if(endDate != nil)
         queryParams[@"endDate"] = endDate;if(order != nil)
         queryParams[@"order"] = order;if(format != nil)

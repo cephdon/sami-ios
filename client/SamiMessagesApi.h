@@ -80,10 +80,6 @@
 
  @param uid User ID. If not specified, assume that of the current authenticated user. If specified, it must be that of a user for which the current authenticated user has read access to.
  @param sdid Source device ID of the messages being searched.
- @param mid The SAMI message ID being searched.
- @param fieldPresence String representing a field from the specified device ID.
- @param filter Filter.
- @param offset A string that represents the starting item, should be the value of &#39;next&#39; field received in the last response. (required for pagination)
  @param startDate startDate
  @param endDate endDate
  @param order Desired sort order: &#39;asc&#39; or &#39;desc&#39;
@@ -92,10 +88,6 @@
  */
 -(NSNumber*) exportNormalizedMessagesWithCompletionBlock : (NSString*) uid
             sdid: (NSString*) sdid
-            mid: (NSString*) mid
-            fieldPresence: (NSString*) fieldPresence
-            filter: (NSString*) filter
-            offset: (NSString*) offset
             startDate: (NSNumber*) startDate
             endDate: (NSNumber*) endDate
             order: (NSString*) order

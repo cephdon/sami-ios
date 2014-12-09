@@ -112,12 +112,12 @@
 
  @param count Number of items to return per query.
  @param sdids Comma separated list of source device IDs (minimum: 1).
- @param field String representing a field from the specified device ID.
+ @param fieldPresence String representing a field from the specified device ID.
  
  */
 -(NSNumber*) getLastNormalizedMessagesWithCompletionBlock : (NSNumber*) count
             sdids: (NSString*) sdids
-            field: (NSString*) field
+            fieldPresence: (NSString*) fieldPresence
     completionHandler: (void (^)(SamiNormalizedMessagesEnvelope* output, NSError* error))completionBlock;
 
 /**

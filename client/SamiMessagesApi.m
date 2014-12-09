@@ -421,7 +421,7 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
 
 -(NSNumber*) getLastNormalizedMessagesWithCompletionBlock:(NSNumber*) count        
             sdids:(NSString*) sdids        
-            field:(NSString*) field        
+            fieldPresence:(NSString*) fieldPresence        
         completionHandler: (void (^)(SamiNormalizedMessagesEnvelope* output, NSError* error))completionBlock
          {
 
@@ -440,8 +440,8 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     NSMutableDictionary* queryParams = [[NSMutableDictionary alloc] init];
     if(count != nil)
         queryParams[@"count"] = count;if(sdids != nil)
-        queryParams[@"sdids"] = sdids;if(field != nil)
-        queryParams[@"field"] = field;
+        queryParams[@"sdids"] = sdids;if(fieldPresence != nil)
+        queryParams[@"fieldPresence"] = fieldPresence;
     NSMutableDictionary* headerParams = [[NSMutableDictionary alloc] init];
     
 

@@ -7,16 +7,17 @@ Prerequisites
 -------------
 
  * Xcode
+ * AFNetworking
 
 Installation
 ---------------------
 
-No specific installation process is required. Drag the `client` folder of SAMI iOS SDK from the Finder window into your Xcode project to start using it.
+Drag the `client` folder of SAMI iOS SDK from the Finder window into your Xcode project. Make sure your project has dependency on AFNetworking library.
 
 Usage
 ---------------------
 
-The easiest way to start using the SAMI iOS SDK is to look at our iOS demo located at [https://github.com/samsungsamiio/sami-ios-demo](https://github.com/samsungsamiio/sami-ios-demo). 
+The easiest way to start using the SAMI iOS SDK is to look at our iOS demo app located at [https://github.com/samsungsamiio/sami-ios-demo](https://github.com/samsungsamiio/sami-ios-demo). 
 
 More about SAMI
 ---------------

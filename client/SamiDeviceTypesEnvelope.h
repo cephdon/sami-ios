@@ -9,14 +9,12 @@
 @property(nonatomic) NSNumber* count;  
 @property(nonatomic) NSNumber* offset;  
 @property(nonatomic) SamiDeviceTypeArray* data;  
-- (id) total: (NSNumber*) total
-  
-       count: (NSNumber*) count
-  
-       offset: (NSNumber*) offset
-  
-       data: (SamiDeviceTypeArray*) data;
-       
+- (id) total: (NSNumber*) total     
+    count: (NSNumber*) count     
+    offset: (NSNumber*) offset     
+    data: (SamiDeviceTypeArray*) data;
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

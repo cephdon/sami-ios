@@ -1,9 +1,9 @@
 #import "SamiDevicesApi.h"
 #import "SWGFile.h"
 #import "SWGApiClient.h"
-#import "SamiDeviceTokenEnvelope.h"
 #import "SamiDeviceEnvelope.h"
 #import "SamiDevice.h"
+#import "SamiDeviceTokenEnvelope.h"
 
 
 
@@ -52,11 +52,11 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
 }
 
 
--(NSNumber*) addDeviceWithCompletionBlock:(SamiDevice*) device        
+-(NSNumber*) addDeviceWithCompletionBlock: (SamiDevice*) device
+        
         completionHandler: (void (^)(SamiDeviceEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = device;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices", basePath];
 
     // remove format in URL if needed
@@ -75,9 +75,11 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
 
     id bodyDictionary = nil;
     
-    if(m_body != nil && [m_body isKindOfClass:[NSArray class]]){
+    id __body = device;
+
+    if(__body != nil && [__body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
-        for (id dict in (NSArray*)m_body) {
+        for (id dict in (NSArray*)__body) {
             if([dict respondsToSelector:@selector(asDictionary)]) {
                 [objs addObject:[(SWGObject*)dict asDictionary]];
             }
@@ -87,68 +89,61 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
         }
         bodyDictionary = objs;
     }
-    else if([m_body respondsToSelector:@selector(asDictionary)]) {
-        bodyDictionary = [(SWGObject*)m_body asDictionary];
+    else if([__body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(SWGObject*)__body asDictionary];
     }
-    else if([m_body isKindOfClass:[NSString class]]) {
+    else if([__body isKindOfClass:[NSString class]]) {
         // convert it to a dictionary
         NSError * error;
-        NSString * str = (NSString*)m_body;
+        NSString * str = (NSString*)__body;
         NSDictionary *JSON =
-            [NSJSONSerialization JSONObjectWithData:[str dataUsingEncoding:NSUTF8StringEncoding]
-                                            options:NSJSONReadingMutableContainers
-                                              error:&error];
+            [NSJSONSerialization JSONObjectWithData: [str dataUsingEncoding: NSUTF8StringEncoding]
+                                            options: NSJSONReadingMutableContainers
+                                              error: &error];
         bodyDictionary = JSON;
     }
-    else if([m_body isKindOfClass: [SWGFile class]]) {
-        requestContentType = @"form-data";
-        bodyDictionary = m_body;
-    }
-    else{
-        NSLog(@"don't know what to do with %@", m_body);
-    }
+    
+    
 
-    
-    
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"POST" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"POST" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
--(NSNumber*) getDeviceWithCompletionBlock:(NSString*) deviceId        
+-(NSNumber*) getDeviceWithCompletionBlock: (NSString*) deviceId
+        
         completionHandler: (void (^)(SamiDeviceEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = nil;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices/{deviceId}", basePath];
 
     // remove format in URL if needed
@@ -169,46 +164,54 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     id bodyDictionary = nil;
     
     
+    bodyDictionary = [[NSMutableArray alloc] init];
+
+    NSMutableDictionary * formParams = [[NSMutableDictionary alloc]init]; 
+
+    
+    [bodyDictionary addObject:formParams];
+    
+
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"GET" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"GET" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
--(NSNumber*) updateDeviceWithCompletionBlock:(NSString*) deviceId        
-            device:(SamiDevice*) device        
+-(NSNumber*) updateDeviceWithCompletionBlock: (NSString*) deviceId
+         device: (SamiDevice*) device
+        
         completionHandler: (void (^)(SamiDeviceEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = device;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices/{deviceId}", basePath];
 
     // remove format in URL if needed
@@ -228,9 +231,11 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
 
     id bodyDictionary = nil;
     
-    if(m_body != nil && [m_body isKindOfClass:[NSArray class]]){
+    id __body = device;
+
+    if(__body != nil && [__body isKindOfClass:[NSArray class]]){
         NSMutableArray * objs = [[NSMutableArray alloc] init];
-        for (id dict in (NSArray*)m_body) {
+        for (id dict in (NSArray*)__body) {
             if([dict respondsToSelector:@selector(asDictionary)]) {
                 [objs addObject:[(SWGObject*)dict asDictionary]];
             }
@@ -240,68 +245,61 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
         }
         bodyDictionary = objs;
     }
-    else if([m_body respondsToSelector:@selector(asDictionary)]) {
-        bodyDictionary = [(SWGObject*)m_body asDictionary];
+    else if([__body respondsToSelector:@selector(asDictionary)]) {
+        bodyDictionary = [(SWGObject*)__body asDictionary];
     }
-    else if([m_body isKindOfClass:[NSString class]]) {
+    else if([__body isKindOfClass:[NSString class]]) {
         // convert it to a dictionary
         NSError * error;
-        NSString * str = (NSString*)m_body;
+        NSString * str = (NSString*)__body;
         NSDictionary *JSON =
-            [NSJSONSerialization JSONObjectWithData:[str dataUsingEncoding:NSUTF8StringEncoding]
-                                            options:NSJSONReadingMutableContainers
-                                              error:&error];
+            [NSJSONSerialization JSONObjectWithData: [str dataUsingEncoding: NSUTF8StringEncoding]
+                                            options: NSJSONReadingMutableContainers
+                                              error: &error];
         bodyDictionary = JSON;
     }
-    else if([m_body isKindOfClass: [SWGFile class]]) {
-        requestContentType = @"form-data";
-        bodyDictionary = m_body;
-    }
-    else{
-        NSLog(@"don't know what to do with %@", m_body);
-    }
+    
+    
 
-    
-    
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"PUT" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"PUT" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
--(NSNumber*) deleteDeviceWithCompletionBlock:(NSString*) deviceId        
+-(NSNumber*) deleteDeviceWithCompletionBlock: (NSString*) deviceId
+        
         completionHandler: (void (^)(SamiDeviceEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = nil;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices/{deviceId}", basePath];
 
     // remove format in URL if needed
@@ -322,45 +320,53 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     id bodyDictionary = nil;
     
     
+    bodyDictionary = [[NSMutableArray alloc] init];
+
+    NSMutableDictionary * formParams = [[NSMutableDictionary alloc]init]; 
+
+    
+    [bodyDictionary addObject:formParams];
+    
+
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"DELETE" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"DELETE" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
--(NSNumber*) getDeviceTokenWithCompletionBlock:(NSString*) deviceId        
+-(NSNumber*) getDeviceTokenWithCompletionBlock: (NSString*) deviceId
+        
         completionHandler: (void (^)(SamiDeviceTokenEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = nil;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices/{deviceId}/tokens", basePath];
 
     // remove format in URL if needed
@@ -381,45 +387,53 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     id bodyDictionary = nil;
     
     
+    bodyDictionary = [[NSMutableArray alloc] init];
+
+    NSMutableDictionary * formParams = [[NSMutableDictionary alloc]init]; 
+
+    
+    [bodyDictionary addObject:formParams];
+    
+
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"GET" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceTokenEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceTokenEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"GET" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceTokenEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceTokenEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
--(NSNumber*) updateDeviceTokenWithCompletionBlock:(NSString*) deviceId        
+-(NSNumber*) updateDeviceTokenWithCompletionBlock: (NSString*) deviceId
+        
         completionHandler: (void (^)(SamiDeviceTokenEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = nil;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices/{deviceId}/tokens", basePath];
 
     // remove format in URL if needed
@@ -440,45 +454,53 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     id bodyDictionary = nil;
     
     
+    bodyDictionary = [[NSMutableArray alloc] init];
+
+    NSMutableDictionary * formParams = [[NSMutableDictionary alloc]init]; 
+
+    
+    [bodyDictionary addObject:formParams];
+    
+
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"PUT" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceTokenEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceTokenEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"PUT" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceTokenEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceTokenEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
--(NSNumber*) deleteDeviceTokenWithCompletionBlock:(NSString*) deviceId        
+-(NSNumber*) deleteDeviceTokenWithCompletionBlock: (NSString*) deviceId
+        
         completionHandler: (void (^)(SamiDeviceTokenEnvelope* output, NSError* error))completionBlock
          {
 
-    id m_body = nil;
     NSMutableString* requestUrl = [NSMutableString stringWithFormat:@"%@/devices/{deviceId}/tokens", basePath];
 
     // remove format in URL if needed
@@ -499,38 +521,46 @@ static NSString * basePath = @"https://api.samsungsami.io/v1.1";
     id bodyDictionary = nil;
     
     
+    bodyDictionary = [[NSMutableArray alloc] init];
+
+    NSMutableDictionary * formParams = [[NSMutableDictionary alloc]init]; 
+
+    
+    [bodyDictionary addObject:formParams];
+    
+
     
 
     SWGApiClient* client = [SWGApiClient sharedClientFromPool:basePath];
 
     
-
     
     
+        
+    // comples response type
+    return [client dictionary: requestUrl 
+                       method: @"DELETE" 
+                  queryParams: queryParams 
+                         body: bodyDictionary 
+                 headerParams: headerParams
+           requestContentType: requestContentType
+          responseContentType: responseContentType
+              completionBlock: ^(NSDictionary *data, NSError *error) {
+                if (error) {
+                    completionBlock(nil, error);
+                    
+                    return;
+                }
+                
+                SamiDeviceTokenEnvelope *result = nil;
+                if (data) {
+                    result = [[SamiDeviceTokenEnvelope    alloc]initWithValues: data];
+                }
+                completionBlock(result , nil);
+                
+              }];
     
-    return [client dictionary:requestUrl 
-                              method:@"DELETE" 
-                         queryParams:queryParams 
-                                body:bodyDictionary 
-                        headerParams:headerParams
-                  requestContentType:requestContentType
-                 responseContentType:responseContentType
-                     completionBlock:^(NSDictionary *data, NSError *error) {
-                        if (error) {
-                            completionBlock(nil, error);
-                            
-                            return;
-                        }
-                        
-                        SamiDeviceTokenEnvelope *result = nil;
-                        if (data) {
-                            result = [[SamiDeviceTokenEnvelope    alloc]initWithValues: data];
-                        }
-                        completionBlock(result , nil);
-                        
-                    }];
     
-
 }
 
 

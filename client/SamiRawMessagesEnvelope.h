@@ -13,22 +13,16 @@
 @property(nonatomic) NSString* order;  
 @property(nonatomic) NSNumber* size;  
 @property(nonatomic) NSArray* data;  
-- (id) sdid: (NSString*) sdid
-  
-       mid: (NSString*) mid
-  
-       startDate: (NSNumber*) startDate
-  
-       endDate: (NSNumber*) endDate
-  
-       count: (NSNumber*) count
-  
-       order: (NSString*) order
-  
-       size: (NSNumber*) size
-  
-       data: (NSArray*) data;
-       
+- (id) sdid: (NSString*) sdid     
+    mid: (NSString*) mid     
+    startDate: (NSNumber*) startDate     
+    endDate: (NSNumber*) endDate     
+    count: (NSNumber*) count     
+    order: (NSString*) order     
+    size: (NSNumber*) size     
+    data: (NSArray*) data;
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

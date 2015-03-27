@@ -7,7 +7,8 @@
 
 @property(nonatomic) NSArray* devices;  
 - (id) devices: (NSArray*) devices;
-       
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

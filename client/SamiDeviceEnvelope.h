@@ -7,7 +7,8 @@
 
 @property(nonatomic) SamiDevice* data;  
 - (id) data: (SamiDevice*) data;
-       
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

@@ -7,7 +7,8 @@
 
 @property(nonatomic) SamiManifestVersions* data;  
 - (id) data: (SamiManifestVersions*) data;
-       
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

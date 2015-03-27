@@ -6,7 +6,8 @@
 
 @property(nonatomic) NSNumber* startDate;  
 - (id) startDate: (NSNumber*) startDate;
-       
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

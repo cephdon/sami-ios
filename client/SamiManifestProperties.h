@@ -6,7 +6,8 @@
 
 @property(nonatomic) NSDictionary* properties;  
 - (id) properties: (NSDictionary*) properties;
-       
+    
+
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

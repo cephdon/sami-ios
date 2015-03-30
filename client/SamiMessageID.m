@@ -1,11 +1,11 @@
 #import "SWGDate.h"
-#import "SamiFieldPresence.h"
+#import "SamiMessageID.h"
 
-@implementation SamiFieldPresence
+@implementation SamiMessageID
 
--(id)startDate: (NSNumber*) startDate { 
+-(id)mid: (NSString*) mid { 
     
-    _startDate = startDate;
+    _mid = mid;
     
     return self;
 }
@@ -13,7 +13,7 @@
 {
     self = [super init];
     if(self) {
-        _startDate = dict[@"startDate"];
+        _mid = dict[@"mid"];
         
     }
     return self;
@@ -23,8 +23,8 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     
     
-    if(_startDate != nil)
-        dict[@"startDate"] = _startDate;
+    if(_mid != nil)
+        dict[@"mid"] = _mid;
     
     
     

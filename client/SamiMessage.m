@@ -1,24 +1,18 @@
 #import "SWGDate.h"
-#import "SamiNormalizedMessage.h"
+#import "SamiMessage.h"
 
-@implementation SamiNormalizedMessage
+@implementation SamiMessage
 
--(id)cts: (NSNumber*) cts
+-(id)sdid: (NSString*) sdid
+    ddid: (NSString*) ddid
     ts: (NSNumber*) ts
-    mid: (NSString*) mid
-    sdid: (NSString*) sdid
-    sdtid: (NSString*) sdtid
-    uid: (NSString*) uid
-    mv: (NSNumber*) mv
+    token: (NSString*) token
     data: (NSDictionary*) data { 
     
-    _cts = cts;
-    _ts = ts;
-    _mid = mid;
     _sdid = sdid;
-    _sdtid = sdtid;
-    _uid = uid;
-    _mv = mv;
+    _ddid = ddid;
+    _ts = ts;
+    _token = token;
     _data = data;
     
     return self;
@@ -27,13 +21,10 @@
 {
     self = [super init];
     if(self) {
-        _cts = dict[@"cts"];
-        _ts = dict[@"ts"];
-        _mid = dict[@"mid"];
         _sdid = dict[@"sdid"];
-        _sdtid = dict[@"sdtid"];
-        _uid = dict[@"uid"];
-        _mv = dict[@"mv"];
+        _ddid = dict[@"ddid"];
+        _ts = dict[@"ts"];
+        _token = dict[@"token"];
         _data = dict[@"data"];
         
     }
@@ -44,8 +35,14 @@
     NSMutableDictionary* dict = [[NSMutableDictionary alloc] init];
     
     
-    if(_cts != nil)
-        dict[@"cts"] = _cts;
+    if(_sdid != nil)
+        dict[@"sdid"] = _sdid;
+    
+    
+    
+    
+    if(_ddid != nil)
+        dict[@"ddid"] = _ddid;
     
     
     
@@ -56,32 +53,8 @@
     
     
     
-    if(_mid != nil)
-        dict[@"mid"] = _mid;
-    
-    
-    
-    
-    if(_sdid != nil)
-        dict[@"sdid"] = _sdid;
-    
-    
-    
-    
-    if(_sdtid != nil)
-        dict[@"sdtid"] = _sdtid;
-    
-    
-    
-    
-    if(_uid != nil)
-        dict[@"uid"] = _uid;
-    
-    
-    
-    
-    if(_mv != nil)
-        dict[@"mv"] = _mv;
+    if(_token != nil)
+        dict[@"token"] = _token;
     
     
     

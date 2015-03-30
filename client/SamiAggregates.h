@@ -9,15 +9,16 @@
 @property(nonatomic) NSNumber* max;  
 @property(nonatomic) NSNumber* mean;  
 @property(nonatomic) NSNumber* sum;  
-@property(nonatomic) NSNumber* variance;  
-- (id) count: (NSNumber*) count     
-    min: (NSNumber*) min     
-    max: (NSNumber*) max     
-    mean: (NSNumber*) mean     
-    sum: (NSNumber*) sum     
-    variance: (NSNumber*) variance;
-    
-
+- (id) count: (NSNumber*) count
+  
+       min: (NSNumber*) min
+  
+       max: (NSNumber*) max
+  
+       mean: (NSNumber*) mean
+  
+       sum: (NSNumber*) sum;
+       
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

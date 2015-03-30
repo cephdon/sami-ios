@@ -1,15 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "AFHTTPRequestOperationManager.h"
+#import "AFHTTPClient.h"
 
-/**
- * A key for `NSError` user info dictionaries.
- * 
- * The corresponding value is the parsed response body for an HTTP error.
- */
-extern NSString *const SWGResponseObjectErrorKey;
-
-
-@interface SWGApiClient : AFHTTPRequestOperationManager
+@interface SWGApiClient : AFHTTPClient
 
 @property(nonatomic, assign) NSURLRequestCachePolicy cachePolicy;
 @property(nonatomic, assign) NSTimeInterval timeoutInterval;

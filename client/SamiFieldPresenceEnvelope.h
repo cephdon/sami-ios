@@ -12,15 +12,20 @@
 @property(nonatomic) NSString* interval;  
 @property(nonatomic) NSNumber* size;  
 @property(nonatomic) NSArray* data;  
-- (id) sdid: (NSString*) sdid     
-    fieldPresence: (NSString*) fieldPresence     
-    startDate: (NSNumber*) startDate     
-    endDate: (NSNumber*) endDate     
-    interval: (NSString*) interval     
-    size: (NSNumber*) size     
-    data: (NSArray*) data;
-    
-
+- (id) sdid: (NSString*) sdid
+  
+       fieldPresence: (NSString*) fieldPresence
+  
+       startDate: (NSNumber*) startDate
+  
+       endDate: (NSNumber*) endDate
+  
+       interval: (NSString*) interval
+  
+       size: (NSNumber*) size
+  
+       data: (NSArray*) data;
+       
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

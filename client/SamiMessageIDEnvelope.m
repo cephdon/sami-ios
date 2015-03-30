@@ -1,9 +1,9 @@
 #import "SWGDate.h"
-#import "SamiPropertiesEnvelope.h"
+#import "SamiMessageIDEnvelope.h"
 
-@implementation SamiPropertiesEnvelope
+@implementation SamiMessageIDEnvelope
 
--(id)data: (SamiAppProperties*) data { 
+-(id)data: (SamiMessageID*) data { 
     
     _data = data;
     
@@ -16,7 +16,7 @@
         
         id data_dict = dict[@"data"];
         if(data_dict != nil)
-            _data = [[SamiAppProperties  alloc]initWithValues:data_dict];
+            _data = [[SamiMessageID  alloc]initWithValues:data_dict];
         
         
     }

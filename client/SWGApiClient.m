@@ -1,9 +1,9 @@
 #import "SWGApiClient.h"
 #import "SWGFile.h"
 
-@implementation SWGApiClient
+#import "AFJSONRequestOperation.h"
 
-NSString *const SWGResponseObjectErrorKey = @"SWGResponseObject";
+@implementation SWGApiClient
 
 static long requestId = 0;
 static bool offlineState = false;
@@ -12,7 +12,7 @@ static bool cacheEnabled = false;
 static AFNetworkReachabilityStatus reachabilityStatus = AFNetworkReachabilityStatusNotReachable;
 static NSOperationQueue* sharedQueue;
 static void (^reachabilityChangeBlock)(int);
-static bool loggingEnabled = true;
+static bool loggingEnabled = false;
 
 +(void)setLoggingEnabled:(bool) state {
     loggingEnabled = state;
@@ -26,8 +26,8 @@ static bool loggingEnabled = true;
     cacheEnabled = enabled;
 }
 
-+(void)configureCacheWithMemoryAndDiskCapacity: (unsigned long) memorySize
-                                      diskSize: (unsigned long) diskSize {
++(void)configureCacheWithMemoryAndDiskCapacity:(unsigned long) memorySize
+                                      diskSize:(unsigned long) diskSize {
     NSAssert(memorySize > 0, @"invalid in-memory cache size");
     NSAssert(diskSize >= 0, @"invalid disk cache size");
     
@@ -68,6 +68,8 @@ static bool loggingEnabled = true;
         SWGApiClient * client = [_pool objectForKey:baseUrl];
         if (client == nil) {
             client = [[SWGApiClient alloc] initWithBaseURL:[NSURL URLWithString:baseUrl]];
+            [client registerHTTPOperationClass:[AFJSONRequestOperation class]];
+            client.parameterEncoding = AFJSONParameterEncoding;
             [_pool setValue:client forKey:baseUrl ];
             if(loggingEnabled)
                 NSLog(@"new client for path %@", baseUrl);
@@ -80,7 +82,7 @@ static bool loggingEnabled = true;
 
 -(void)setHeaderValue:(NSString*) value
                forKey:(NSString*) forKey {
-    [self.requestSerializer setValue:value forHTTPHeaderField:forKey];
+    [self setDefaultHeader:forKey value:value];
 }
 
 +(unsigned long)requestQueueSize {
@@ -140,8 +142,6 @@ static bool loggingEnabled = true;
 
 -(id)initWithBaseURL:(NSURL *)url {
     self = [super initWithBaseURL:url];
-    self.requestSerializer = [AFJSONRequestSerializer serializer];
-    self.responseSerializer = [AFJSONResponseSerializer serializer];
     if (!self)
         return nil;
     return self;
@@ -160,7 +160,7 @@ static bool loggingEnabled = true;
 }
 
 +(void) configureCacheReachibilityForHost:(NSString*)host {
-    [[SWGApiClient sharedClientFromPool:host].reachabilityManager setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
+    [[SWGApiClient sharedClientFromPool:host ] setReachabilityStatusChangeBlock:^(AFNetworkReachabilityStatus status) {
         reachabilityStatus = status;
         switch (status) {
             case AFNetworkReachabilityStatusUnknown:
@@ -194,7 +194,6 @@ static bool loggingEnabled = true;
             reachabilityChangeBlock(status);
         }
     }];
-    [[SWGApiClient sharedClientFromPool:host].reachabilityManager startMonitoring];
 }
 
 -(NSString*) pathWithQueryParamsToString:(NSString*) path
@@ -234,60 +233,35 @@ static bool loggingEnabled = true;
     NSLog(@"request: %@  response: %@ ",  [self descriptionForRequest:request], data );
 }
 
--(NSNumber*)  dictionary: (NSString*) path
-                  method: (NSString*) method
-             queryParams: (NSDictionary*) queryParams
-                    body: (id) body
-            headerParams: (NSDictionary*) headerParams
-      requestContentType: (NSString*) requestContentType
-     responseContentType: (NSString*) responseContentType
-         completionBlock: (void (^)(NSDictionary*, NSError *))completionBlock {
+
+-(NSNumber*)  dictionary:(NSString*) path
+                  method:(NSString*) method
+             queryParams:(NSDictionary*) queryParams
+                    body:(id) body
+            headerParams:(NSDictionary*) headerParams
+      requestContentType:(NSString*) requestContentType
+     responseContentType:(NSString*) responseContentType
+         completionBlock:(void (^)(NSDictionary*, NSError *))completionBlock {
     
     NSMutableURLRequest * request = nil;
-    if (body != nil && [body isKindOfClass:[NSArray class]]){
-        SWGFile * file;
-        NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
-        for(id obj in body) {
-            if([obj isKindOfClass:[SWGFile class]]) {
-                file = (SWGFile*) obj;
-                requestContentType = @"multipart/form-data";
-            }
-            else if([obj isKindOfClass:[NSDictionary class]]) {
-                for(NSString * key in obj) {
-                    params[key] = obj[key];
-                }
-            }
-        }
-        NSString * urlString = [[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString];
+    
+    if ([body isKindOfClass:[SWGFile class]]){
+        SWGFile * file = (SWGFile*) body;
         
-        if(file != nil) {
-            request = [self.requestSerializer multipartFormRequestWithMethod: @"POST"
-                                                                   URLString: urlString
-                                                                  parameters: nil
-                                                   constructingBodyWithBlock: ^(id<AFMultipartFormData> formData) {
-
-                                                       for(NSString * key in params) {
-                                                           NSData* data = [params[key] dataUsingEncoding:NSUTF8StringEncoding];
-                                                           [formData appendPartWithFormData: data name: key];
-                                                       }
-                                                       
-                                                       [formData appendPartWithFileData: [file data]
-                                                                                   name: [file paramName]
-                                                                               fileName: [file name]
-                                                                               mimeType: [file mimeType]];
-                                                       
-                                                   }
-                                                                       error:nil];
-        }
+        request = [self multipartFormRequestWithMethod:@"POST"
+                                                  path:path
+                                            parameters:nil
+                             constructingBodyWithBlock: ^(id <AFMultipartFormData> formData) {
+                                 [formData appendPartWithFileData:[file data]
+                                                             name:@"image"
+                                                         fileName:[file name]
+                                                         mimeType:[file mimeType]];
+                             }];
     }
     else {
-        NSString * pathWithQueryParams = [self pathWithQueryParamsToString:path queryParams:queryParams];
-        NSString * urlString = [[NSURL URLWithString:pathWithQueryParams relativeToURL:self.baseURL] absoluteString];
-        
-        request = [self.requestSerializer requestWithMethod:method
-                                                  URLString:urlString
-                                                 parameters:body
-                                                      error:nil];
+        request = [self requestWithMethod:method
+                                     path:[self pathWithQueryParamsToString:path queryParams:queryParams]
+                               parameters:body];
     }
     BOOL hasHeaderParams = false;
     if(headerParams != nil && [headerParams count] > 0)
@@ -305,11 +279,9 @@ static bool loggingEnabled = true;
         [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     }
 
-    AFJSONRequestSerializer *requestSerializer = [AFJSONRequestSerializer serializer];
-
     if(body != nil) {
         if([body isKindOfClass:[NSDictionary class]] || [body isKindOfClass:[NSArray class]]){
-            [requestSerializer setValue:requestContentType forHTTPHeaderField:@"Content-Type"];
+            [request setValue:requestContentType forHTTPHeaderField:@"Content-Type"];
         }
         else if ([body isKindOfClass:[SWGFile class]]) {}
         else {
@@ -321,7 +293,7 @@ static bool loggingEnabled = true;
             [request setValue:[headerParams valueForKey:key] forHTTPHeaderField:key];
         }
     }
-    [requestSerializer setValue:responseContentType forHTTPHeaderField:@"Accept"];
+    [request setValue:[headerParams valueForKey:responseContentType] forHTTPHeaderField:@"Accept"];
     
     // Always disable cookies!
     [request setHTTPShouldHandleCookies:NO];
@@ -332,88 +304,60 @@ static bool loggingEnabled = true;
     }
     
     NSNumber* requestId = [SWGApiClient queueRequest];
-    AFHTTPRequestOperation *op =
-    [self HTTPRequestOperationWithRequest:request
-     success:^(AFHTTPRequestOperation *operation, id JSON) {
+    AFJSONRequestOperation *op =
+    [AFJSONRequestOperation
+     JSONRequestOperationWithRequest:request
+     success:^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
          if([self executeRequestWithId:requestId]) {
              if(self.logServerResponses)
                  [self logResponse:JSON forRequest:request error:nil];
              completionBlock(JSON, nil);
          }
-     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+     } failure:^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id data) {
          if([self executeRequestWithId:requestId]) {
-             NSMutableDictionary *userInfo = [error.userInfo mutableCopy];
-             if(operation.responseObject) {
-                 // Add in the (parsed) response body.
-                 userInfo[SWGResponseObjectErrorKey] = operation.responseObject;
-             }
-             NSError *augmentedError = [error initWithDomain:error.domain code:error.code userInfo:userInfo];
-             
              if(self.logServerResponses)
-                 [self logResponse:nil forRequest:request error:augmentedError];
-             completionBlock(nil, augmentedError);
+                 [self logResponse:nil forRequest:request error:error];
+             completionBlock(nil, error);
          }
      }
      ];
     
-    [self.operationQueue addOperation:op];
+    [self enqueueHTTPRequestOperation:op];
     return requestId;
 }
 
--(NSNumber*)  stringWithCompletionBlock: (NSString*) path
-                                 method: (NSString*) method
-                            queryParams: (NSDictionary*) queryParams
-                                   body: (id) body
-                           headerParams: (NSDictionary*) headerParams
-                     requestContentType: (NSString*) requestContentType
-                    responseContentType: (NSString*) responseContentType
-                        completionBlock: (void (^)(NSString*, NSError *))completionBlock {
+-(NSNumber*)  stringWithCompletionBlock:(NSString*) path
+                                 method:(NSString*) method
+                            queryParams:(NSDictionary*) queryParams
+                                   body:(id) body
+                           headerParams:(NSDictionary*) headerParams
+                     requestContentType:(NSString*) requestContentType
+                    responseContentType:(NSString*) responseContentType
+                        completionBlock:(void (^)(NSString*, NSError *))completionBlock {
+    AFHTTPClient *client = self;
+    client.parameterEncoding = AFJSONParameterEncoding;
+    
     NSMutableURLRequest * request = nil;
-    if (body != nil && [body isKindOfClass:[NSArray class]]){
-        SWGFile * file;
-        NSMutableDictionary * params = [[NSMutableDictionary alloc] init];
-        for(id obj in body) {
-            if([obj isKindOfClass:[SWGFile class]]) {
-                file = (SWGFile*) obj;
-                requestContentType = @"multipart/form-data";
-            }
-            else if([obj isKindOfClass:[NSDictionary class]]) {
-                for(NSString * key in obj) {
-                    params[key] = obj[key];
-                }
-            }
-        }
-        NSString * urlString = [[NSURL URLWithString:path relativeToURL:self.baseURL] absoluteString];
+    
+    if ([body isKindOfClass:[SWGFile class]]){
+        SWGFile * file = (SWGFile*) body;
         
-        if(file != nil) {
-            request = [self.requestSerializer multipartFormRequestWithMethod: @"POST"
-                                                                   URLString: urlString
-                                                                  parameters: nil
-                                                   constructingBodyWithBlock: ^(id<AFMultipartFormData> formData) {
-                                                       
-                                                       for(NSString * key in params) {
-                                                           NSData* data = [params[key] dataUsingEncoding:NSUTF8StringEncoding];
-                                                           [formData appendPartWithFormData: data name: key];
-                                                       }
-                                                       
-                                                       [formData appendPartWithFileData: [file data]
-                                                                                   name: [file paramName]
-                                                                               fileName: [file name]
-                                                                               mimeType: [file mimeType]];
-                                                       
-                                                   }
-                                                                       error:nil];
-        }
+        request = [self multipartFormRequestWithMethod:@"POST"
+                                                  path:path
+                                            parameters:nil
+                             constructingBodyWithBlock: ^(id <AFMultipartFormData> formData) {
+                                 [formData appendPartWithFileData:[file data]
+                                                             name:@"image"
+                                                         fileName:[file name]
+                                                         mimeType:[file mimeType]];
+                             }];
     }
     else {
-        NSString * pathWithQueryParams = [self pathWithQueryParamsToString:path queryParams:queryParams];
-        NSString * urlString = [[NSURL URLWithString:pathWithQueryParams relativeToURL:self.baseURL] absoluteString];
-        
-        request = [self.requestSerializer requestWithMethod: method
-                                                  URLString: urlString
-                                                 parameters: body
-                                                      error: nil];
+        request = [self requestWithMethod:method
+                                     path:[self pathWithQueryParamsToString:path queryParams:queryParams]
+                               parameters:body];
     }
+    
     BOOL hasHeaderParams = false;
     if(headerParams != nil && [headerParams count] > 0)
         hasHeaderParams = true;
@@ -430,12 +374,9 @@ static bool loggingEnabled = true;
         [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
     }
     
-    
-    AFJSONRequestSerializer *requestSerializer = [AFJSONRequestSerializer serializer];
-
     if(body != nil) {
-        if([body isKindOfClass:[NSDictionary class]] || [body isKindOfClass:[NSArray class]]){
-            [requestSerializer setValue:requestContentType forHTTPHeaderField:@"Content-Type"];
+        if([body isKindOfClass:[NSDictionary class]]){
+            [request setValue:requestContentType forHTTPHeaderField:@"Content-Type"];
         }
         else if ([body isKindOfClass:[SWGFile class]]){}
         else {
@@ -447,16 +388,17 @@ static bool loggingEnabled = true;
             [request setValue:[headerParams valueForKey:key] forHTTPHeaderField:key];
         }
     }
-    [requestSerializer setValue:responseContentType forHTTPHeaderField:@"Accept"];
-
+    [request setValue:[headerParams valueForKey:responseContentType] forHTTPHeaderField:@"Accept"];
     
     // Always disable cookies!
     [request setHTTPShouldHandleCookies:NO];
     
     NSNumber* requestId = [SWGApiClient queueRequest];
-    AFHTTPRequestOperation *op = [self HTTPRequestOperationWithRequest:request
-     success:^(AFHTTPRequestOperation *operation, id responseObject) {
-         NSString *response = [operation responseString];
+    AFHTTPRequestOperation *op = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    [op setCompletionBlockWithSuccess:
+     ^(AFHTTPRequestOperation *resp,
+       id responseObject) {
+         NSString *response = [resp responseString];
          if([self executeRequestWithId:requestId]) {
              if(self.logServerResponses)
                  [self logResponse:responseObject forRequest:request error:nil];
@@ -464,20 +406,13 @@ static bool loggingEnabled = true;
          }
      } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
          if([self executeRequestWithId:requestId]) {
-             NSMutableDictionary *userInfo = [error.userInfo mutableCopy];
-             if(operation.responseObject) {
-                 // Add in the (parsed) response body.
-                 userInfo[SWGResponseObjectErrorKey] = operation.responseObject;
-             }
-             NSError *augmentedError = [error initWithDomain:error.domain code:error.code userInfo:userInfo];
-             
              if(self.logServerResponses)
-                 [self logResponse:nil forRequest:request error:augmentedError];
-             completionBlock(nil, augmentedError);
+                 [self logResponse:nil forRequest:request error:error];
+             completionBlock(nil, error);
          }
      }];
     
-    [self.operationQueue addOperation:op];
+    [self enqueueHTTPRequestOperation:op];
     return requestId;
 }
 

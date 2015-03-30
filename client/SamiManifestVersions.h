@@ -6,8 +6,7 @@
 
 @property(nonatomic) NSArray* versions;  
 - (id) versions: (NSArray*) versions;
-    
-
+       
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

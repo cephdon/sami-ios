@@ -11,14 +11,18 @@
 @property(nonatomic) NSNumber* endDate;  
 @property(nonatomic) NSNumber* size;  
 @property(nonatomic) NSArray* data;  
-- (id) sdid: (NSString*) sdid     
-    field: (NSString*) field     
-    startDate: (NSNumber*) startDate     
-    endDate: (NSNumber*) endDate     
-    size: (NSNumber*) size     
-    data: (NSArray*) data;
-    
-
+- (id) sdid: (NSString*) sdid
+  
+       field: (NSString*) field
+  
+       startDate: (NSNumber*) startDate
+  
+       endDate: (NSNumber*) endDate
+  
+       size: (NSNumber*) size
+  
+       data: (NSArray*) data;
+       
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 

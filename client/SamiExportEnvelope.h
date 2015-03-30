@@ -1,33 +1,29 @@
 #import <Foundation/Foundation.h>
 #import "SWGObject.h"
-#import "SamiRawMessage.h"
 
 
-@interface SamiRawMessagesEnvelope : SWGObject
+@interface SamiExportEnvelope : SWGObject
 
+@property(nonatomic) NSString* exportId;  
+@property(nonatomic) NSString* uid;  
 @property(nonatomic) NSString* sdid;  
-@property(nonatomic) NSString* mid;  
 @property(nonatomic) NSNumber* startDate;  
 @property(nonatomic) NSNumber* endDate;  
-@property(nonatomic) NSNumber* count;  
 @property(nonatomic) NSString* order;  
-@property(nonatomic) NSNumber* size;  
-@property(nonatomic) NSArray* data;  
-- (id) sdid: (NSString*) sdid
+@property(nonatomic) NSString* format;  
+- (id) exportId: (NSString*) exportId
   
-       mid: (NSString*) mid
+       uid: (NSString*) uid
+  
+       sdid: (NSString*) sdid
   
        startDate: (NSNumber*) startDate
   
        endDate: (NSNumber*) endDate
   
-       count: (NSNumber*) count
-  
        order: (NSString*) order
   
-       size: (NSNumber*) size
-  
-       data: (NSArray*) data;
+       format: (NSString*) format;
        
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

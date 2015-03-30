@@ -2,10 +2,10 @@
 #import "SWGObject.h"
 
 
-@interface SamiFieldPresence : SWGObject
+@interface SamiMessageID : SWGObject
 
-@property(nonatomic) NSNumber* startDate;  
-- (id) startDate: (NSNumber*) startDate;
+@property(nonatomic) NSString* mid;  
+- (id) mid: (NSString*) mid;
        
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;

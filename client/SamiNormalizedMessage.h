@@ -12,16 +12,22 @@
 @property(nonatomic) NSString* uid;  
 @property(nonatomic) NSNumber* mv;  
 @property(nonatomic) NSDictionary* data;  
-- (id) cts: (NSNumber*) cts     
-    ts: (NSNumber*) ts     
-    mid: (NSString*) mid     
-    sdid: (NSString*) sdid     
-    sdtid: (NSString*) sdtid     
-    uid: (NSString*) uid     
-    mv: (NSNumber*) mv     
-    data: (NSDictionary*) data;
-    
-
+- (id) cts: (NSNumber*) cts
+  
+       ts: (NSNumber*) ts
+  
+       mid: (NSString*) mid
+  
+       sdid: (NSString*) sdid
+  
+       sdtid: (NSString*) sdtid
+  
+       uid: (NSString*) uid
+  
+       mv: (NSNumber*) mv
+  
+       data: (NSDictionary*) data;
+       
 - (id) initWithValues: (NSDictionary*)dict;
 - (NSDictionary*) asDictionary;
 
